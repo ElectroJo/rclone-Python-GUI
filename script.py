@@ -2,9 +2,7 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 import tkinter
 from threading import Thread
-from collections import deque
-from itertools import islice
-from queue import Queue, Empty
+import configparser
 
 GUI = tkinter.Tk()
 GUI.minsize(width=200, height=200)
