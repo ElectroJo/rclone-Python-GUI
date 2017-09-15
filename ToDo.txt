@@ -1,0 +1,2 @@
+Make the GUI look better
+Add more commands/custom commands
