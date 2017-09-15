@@ -1,2 +1,3 @@
 Make the GUI look better
 Add more commands/custom commands
+Make it so people can sync back from remote
