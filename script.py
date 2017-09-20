@@ -10,12 +10,12 @@ from tkinter import messagebox
 from tkinter.ttk import *
 
 GUI = tkinter.Tk()
-ConfigButtons = []
+#ConfigButtons = []
 processlist = []
 rcloneCommands = ['sync','ls','delete','mount','purge','lsd']
-currentcommand = tkinter.StringVar()
-currentcommandlist = []
-currentcommand.set("")
+#currentcommand = tkinter.StringVar()
+#currentcommandlist = []
+#currentcommand.set("")
 SourceType = ""
 DestType = ""
 AllLetters = ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'Y:', 'Z:']
@@ -28,7 +28,7 @@ class rcloneProcess:
     def __init__(self, GUI, *Commands):
         ComputerDrives = win32api.GetLogicalDriveStrings()
         ComputerDrives = ComputerDrives.split('\\\x00')[:-1]
-        if ("mount" in Commands and Commands[2] in ComputerDrives):
+        if ("mount" in Commands and Commands[1] in ComputerDrives):
             messagebox.showerror("Error","You are trying to mount to a drive that allready exists. \nPlease pick a diffrent letter.")
         elif ("sync" in Commands and Commands[2] not in ComputerDrives and Commands[2] in AllLetters):
             messagebox.showerror("Error","You are trying to sync to a drive that doesn't exists. \nPlease pick a diffrent letter.")
@@ -81,127 +81,134 @@ class rcloneProcess:
             ende.destroy()
         kill_after(countdown=5)
 
+class TabInit:
+    def __init__(self,tabs,text,command):
+        self.tabs = tabs
+        self.textss = text
+        self.commandss = command
+        self.currentcommand = tkinter.StringVar()
+        self.currentcommandlist = []
+        self.currentcommand.set("")
+        self.ConfigButtons = []
+        self.MountTab = tkinter.Frame(self.tabs)
+        self.tabs.add(self.MountTab, text = self.textss)
+        self.AddButtonToTab(self.MountTab,self.commandss)
+
+    def LoadConfigFromUser(self,ConFigButtonsFrame, Where="", Text = ""):
+        self.Columnx = 0
+        self.Rowy = 1
+        self.ConfigButtons
+        self.User = getpass.getuser()
+        for section in self.ConfigButtons:
+            section.destroy()
+        self.ConfigLable = tkinter.Label(ConFigButtonsFrame, text = Text, width = 16)
+        self.ConfigLable.grid()
+        self.ConfigButtons = []
+        self.ConfigButtons.append(self.ConfigLable)
+        self.ListVerYes = []
+        if Text in ("Default Source:", "Default Target:", "Custom Source:", "Custom Target:"):
+            self.Config = configparser.ConfigParser()
+            if Where == "":
+                self.Config.read("C:\\Users\\" + self.User +"\\.config\\rclone\\rclone.conf")
+            else:
+                self.Config.read(Where)
+            self.ListVerYes = self.Config.sections()
+        elif Text == "Command:":
+            self.ListVerYes = rcloneCommands
+        elif Text in ("Drive Source:", "Drive Target:"):
+            if Text == "Drive Target:":
+    #            ListVerYes = [x for x in AllLetters if x not in ComputerDrives]
+                self.ListVerYes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+            elif Text == "Drive Source:":
+                self.ComputerDrives = win32api.GetLogicalDriveStrings()
+                self.ComputerDrives = self.ComputerDrives.split('\\\x00')[:-1]
+                self.ComputerDrives = [x.strip(":") for x in self.ComputerDrives]
+                self.ListVerYes = self.ComputerDrives
+        for sections in self.ListVerYes:
+            if Text in ("Default Source:", "Custom Source:", "Drive Source:"):
+                self.ConfigSection = tkinter.Button(ConFigButtonsFrame, width = 16, text = sections, command = lambda sections=sections: self.PickCMDCMD(sections+":",1,Text))
+            elif Text in ("Default Target:", "Custom Target:", "Drive Target:"):
+                self.ConfigSection = tkinter.Button(ConFigButtonsFrame, width = 16, text = sections, command = lambda sections=sections: self.PickCMDCMD(sections+":",2,Text))
+            if self.Columnx == 0:
+                self.ConfigSection.grid(column=self.Columnx, row=self.Rowy)
+                self.Columnx = 1
+            else:
+                self.ConfigSection.grid(column=self.Columnx, row=self.Rowy)
+                self.Rowy += 1
+                self.Columnx = 0
+            self.ConfigButtons.append(self.ConfigSection)
+    def LoadFile(self):
+        self.ConfigFile = askopenfilename()
+        return self.ConfigFile
+    def PickCMDCMD(self,section,position,Type=""):
+        while position+1 > len(self.currentcommandlist):
+            if len(self.currentcommandlist) != position+1:
+                self.currentcommandlist.append("")
+        self.currentcommandlist[position] = section
+        self.currentcommand.set(" ".join(self.currentcommandlist))
+        if Type in ("Default Source:", "Custom Source:", "Drive Source:"):
+            if Type == "Drive Source:":
+                SourceType = "Local"
+            else:
+                SourceType = "Remote"
+        elif Type in ("Default Target:", "Custom Target:", "Drive Target:"):
+            if Type ==  "Drive Target:":
+                DestType = "Local"
+            else:
+                DestType = "Remote"
+
+
+    def RcloneRemovedo(self):
+        self.currentcommandlist[:] = [item for item in self.currentcommandlist if item != '']
+        rcloneProcess(self.MainButtons, *self.currentcommandlist)
+
+    def AddButtonToTab(self,Tab,command):
+        self.MainButtons = tkinter.Frame(Tab)
+        self.MainButtons.grid(sticky='w',row=0)
+        self.TestCommand = tkinter.Button(self.MainButtons, text = 'Test', width = 16,command = lambda: self.RcloneRemovedo())
+        self.TestCommand.grid(column=0, row=0)
+        self.CloseButton = tkinter.Button(self.MainButtons, text = "Close", width = 16, command = lambda: RemoveGUI())
+        self.CloseButton.grid(column=1, row=0)
+        self.PickCMDCMD(command,0)
+        self.LineCanvas1 = tkinter.Canvas(Tab, height = 1, width = 240)
+        self.LineCanvas1.grid(sticky='we',row=1)
+        self.LineCanvas1.create_line(0,0,250,0,fill='black', width=6)
+
+        self.CommandButtons = tkinter.Frame(Tab)
+        self.CommandButtons.grid(row=2)
+        self.SourceLable = tkinter.Label(self.CommandButtons, text = "Target", width = 16)
+        self.SourceLable.grid(column = 1, row = 0)
+        self.TargetLable = tkinter.Label(self.CommandButtons, text = "Source", width = 16)
+        self.TargetLable.grid(column = 0, row = 0)
+        self.LoadConfig = tkinter.Button(self.CommandButtons, text = "From Default Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Default Source:"))
+        self.LoadConfig.grid(column = 0, row = 1)
+        self.LoadConfigDest = tkinter.Button(self.CommandButtons, text = "From Default Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Default Target:"))
+        self.LoadConfigDest.grid(column = 1, row = 1)
+        self.LoadCustomConfig = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(), "Custom Source:"))
+        self.LoadCustomConfig.grid(column = 0, row = 2)
+        self.LoadCustomConfigDest = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(),"Custom Target:"))
+        self.LoadCustomConfigDest.grid(column = 1, row = 2)
+        self.PickLocalSource = tkinter.Button(self.CommandButtons, text = "Local Drive", width = 16,command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Source:"))
+        self.PickLocalSource.grid(column = 0, row = 3)
+        self.PickLocalTarget = tkinter.Button(self.CommandButtons, text = "Local Drive", width = 16,command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Target:"))
+        self.PickLocalTarget.grid(column = 1, row = 3)
+
+        self.CurrentCommand = tkinter.Frame(Tab)
+        self.CurrentCommand.grid(sticky='we',row=3)
+        self.currentcommandlable = tkinter.Label(self.CurrentCommand, textvariable = self.currentcommand)
+        self.currentcommandlable.grid(sticky='we')
+
+        self.LineCanvas2 = tkinter.Canvas(Tab, height = 1, width = 240)
+        self.LineCanvas2.grid(sticky='we',row=4)
+        self.LineCanvas2.create_line(0,0,250,0,fill='black', width=6)
+
+        ConFigButtonsFrame = tkinter.Frame(Tab)
+        ConFigButtonsFrame.grid(row=5)
 
 def RemoveGUI():
     for process in processlist:
         process.terminate()
     GUI.destroy()
-
-
-def LoadConfigFromUser(ConFigButtonsFrame, Where="", Text = ""):
-    Columnx = 0
-    Rowy = 1
-    global ConfigButtons
-    User = getpass.getuser()
-    for section in ConfigButtons:
-        section.destroy()
-    ConfigLable = tkinter.Label(ConFigButtonsFrame, text = Text, width = 16)
-    ConfigLable.grid()
-    ConfigButtons = []
-    ConfigButtons.append(ConfigLable)
-    ListVerYes = []
-    if Text in ("Default Source:", "Default Target:", "Custom Source:", "Custom Target:"):
-        Config = configparser.ConfigParser()
-        if Where == "":
-            Config.read("C:\\Users\\" + User +"\\.config\\rclone\\rclone.conf")
-        else:
-            Config.read(Where)
-        ListVerYes = Config.sections()
-    elif Text == "Command:":
-        ListVerYes = rcloneCommands
-    elif Text in ("Drive Source:", "Drive Target:"):
-        if Text == "Drive Target:":
-#            ListVerYes = [x for x in AllLetters if x not in ComputerDrives]
-            ListVerYes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-        elif Text == "Drive Source:":
-            ComputerDrives = win32api.GetLogicalDriveStrings()
-            ComputerDrives = ComputerDrives.split('\\\x00')[:-1]
-            ComputerDrives = [x.strip(":") for x in ComputerDrives]
-            ListVerYes = ComputerDrives
-    for sections in ListVerYes:
-        if Text in ("Default Source:", "Custom Source:", "Drive Source:"):
-            ConfigSection = tkinter.Button(ConFigButtonsFrame, width = 16, text = sections, command = lambda sections=sections: PickCMDCMD(sections+":",1,Text))
-        elif Text in ("Default Target:", "Custom Target:", "Drive Target:"):
-            ConfigSection = tkinter.Button(ConFigButtonsFrame, width = 16, text = sections, command = lambda sections=sections: PickCMDCMD(sections+":",2,Text))
-        elif Text == "Command:":
-            ConfigSection = tkinter.Button(ConFigButtonsFrame, width = 16, text = sections, command = lambda sections=sections: PickCMDCMD(sections,0))
-        if Columnx == 0:
-            ConfigSection.grid(column=Columnx, row=Rowy)
-            Columnx = 1
-        else:
-            ConfigSection.grid(column=Columnx, row=Rowy)
-            Rowy += 1
-            Columnx = 0
-        ConfigButtons.append(ConfigSection)
-
-
-
-def LoadFile():
-    ConfigFile = askopenfilename()
-    return ConfigFile
-
-def PickCMDCMD(section,position,Type=""):
-    while position+1 > len(currentcommandlist):
-        if len(currentcommandlist) != position+1:
-            currentcommandlist.append("")
-    currentcommandlist[position] = section
-    currentcommand.set(" ".join(currentcommandlist))
-    if Type in ("Default Source:", "Custom Source:", "Drive Source:"):
-        if Type == "Drive Source:":
-            SourceType = "Local"
-        else:
-            SourceType = "Remote"
-    elif Type in ("Default Target:", "Custom Target:", "Drive Target:"):
-        if Type ==  "Drive Target:":
-            DestType = "Local"
-        else:
-            DestType = "Remote"
-    currentcommandlist[:] = [item for item in currentcommandlist if item != '']
-
-def AddButtonToTab(Tab):
-    MainButtons = tkinter.Frame(Tab)
-    MainButtons.grid(sticky='w',row=0)
-    TestCommand = tkinter.Button(MainButtons, text = 'Test', width = 16,command = lambda: rcloneProcess(MainButtons, *currentcommandlist))
-    TestCommand.grid(column=0, row=0)
-    CloseButton = tkinter.Button(MainButtons, text = "Close", width = 16, command = lambda: RemoveGUI())
-    CloseButton.grid(column=1, row=0)
-    PickCommands = tkinter.Button(MainButtons, text = "Pick Command", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Command:"))
-    PickCommands.grid(column = 0, row = 1)
-
-    LineCanvas1 = tkinter.Canvas(Tab, height = 1, width = 240)
-    LineCanvas1.grid(sticky='we',row=1)
-    LineCanvas1.create_line(0,0,250,0,fill='black', width=6)
-
-    CommandButtons = tkinter.Frame(Tab)
-    CommandButtons.grid(row=2)
-    SourceLable = tkinter.Label(CommandButtons, text = "Target", width = 16)
-    SourceLable.grid(column = 1, row = 0)
-    TargetLable = tkinter.Label(CommandButtons, text = "Source", width = 16)
-    TargetLable.grid(column = 0, row = 0)
-    LoadConfig = tkinter.Button(CommandButtons, text = "From Default Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Default Source:"))
-    LoadConfig.grid(column = 0, row = 1)
-    LoadConfigDest = tkinter.Button(CommandButtons, text = "From Default Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Default Target:"))
-    LoadConfigDest.grid(column = 1, row = 1)
-    LoadCustomConfig = tkinter.Button(CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(), "Custom Source:"))
-    LoadCustomConfig.grid(column = 0, row = 2)
-    LoadCustomConfigDest = tkinter.Button(CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(),"Custom Target:"))
-    LoadCustomConfigDest.grid(column = 1, row = 2)
-    PickLocalSource = tkinter.Button(CommandButtons, text = "Local Drive", width = 16,command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Source:"))
-    PickLocalSource.grid(column = 0, row = 3)
-    PickLocalTarget = tkinter.Button(CommandButtons, text = "Local Drive", width = 16,command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Target:"))
-    PickLocalTarget.grid(column = 1, row = 3)
-
-    CurrentCommand = tkinter.Frame(Tab)
-    CurrentCommand.grid(sticky='we',row=3)
-    currentcommandlable = tkinter.Label(CurrentCommand, textvariable = currentcommand)
-    currentcommandlable.grid(sticky='we')
-
-    LineCanvas2 = tkinter.Canvas(Tab, height = 1, width = 240)
-    LineCanvas2.grid(sticky='we',row=4)
-    LineCanvas2.create_line(0,0,250,0,fill='black', width=6)
-
-    ConFigButtonsFrame = tkinter.Frame(Tab)
-    ConFigButtonsFrame.grid(row=5)
 
 def ButtonsGUI():
     MainCommandsLabel = tkinter.Label(GUI, text="Commands")
@@ -209,14 +216,8 @@ def ButtonsGUI():
     Tabs = Notebook(GUI)
     Tabs.grid()
 
-    MountTab = tkinter.Frame(GUI)
-    ButtonsFrame = tkinter.Frame(Tabs)
+    TabInit(Tabs,text = "Mount",command = "mount")
 
-    Tabs.add(ButtonsFrame, text = "Main")
-    Tabs.add(MountTab, text = "Mount")
-
-    AddButtonToTab(MountTab)
-    AddButtonToTab(ButtonsFrame)
 
 def MainWindow():
     ButtonsGUI()
