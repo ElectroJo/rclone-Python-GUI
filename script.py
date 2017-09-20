@@ -10,12 +10,8 @@ from tkinter import messagebox
 from tkinter.ttk import *
 
 GUI = tkinter.Tk()
-#ConfigButtons = []
 processlist = []
 rcloneCommands = ['sync','ls','delete','mount','purge','lsd']
-#currentcommand = tkinter.StringVar()
-#currentcommandlist = []
-#currentcommand.set("")
 SourceType = ""
 DestType = ""
 AllLetters = ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'Y:', 'Z:']
@@ -54,6 +50,7 @@ class rcloneProcess:
             self.Console.grid(row=1)
             self.ScrollBar = tkinter.Scrollbar(self.ConsoleFrame, command=self.Console.yview)
             self.ScrollBar.grid(row=1, column=1, sticky='ns')
+        self.Console.insert(tkinter.END, str(self.CommandLists)+"\n")
 
     def reader_thread(self):
         for line in iter(self.process.stdout.readline, b''):
@@ -93,7 +90,6 @@ class TabInit:
         self.MountTab = tkinter.Frame(self.tabs)
         self.tabs.add(self.MountTab, text = self.textss)
         self.AddButtonToTab(self.MountTab,self.commandss)
-
     def LoadConfigFromUser(self,ConFigButtonsFrame, Where="", Text = ""):
         self.Columnx = 0
         self.Rowy = 1
@@ -215,8 +211,9 @@ def ButtonsGUI():
     MainCommandsLabel.grid()
     Tabs = Notebook(GUI)
     Tabs.grid()
+    for commands in rcloneCommands:
+        TabInit(Tabs,text = commands,command = commands)
 
-    TabInit(Tabs,text = "Mount",command = "mount")
 
 
 def MainWindow():
