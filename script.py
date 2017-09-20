@@ -7,6 +7,7 @@ import getpass
 from tkinter.filedialog import askopenfilename
 import win32api
 from tkinter import messagebox
+from tkinter.ttk import *
 
 GUI = tkinter.Tk()
 ConfigButtons = []
@@ -155,12 +156,10 @@ def PickCMDCMD(section,position,Type=""):
             DestType = "Local"
         else:
             DestType = "Remote"
+    currentcommandlist[:] = [item for item in currentcommandlist if item != '']
 
-def ButtonsGUI():
-    ButtonsFrame = tkinter.Frame(GUI)
-    ButtonsFrame.grid()
-
-    MainButtons = tkinter.Frame(ButtonsFrame)
+def AddButtonToTab(Tab):
+    MainButtons = tkinter.Frame(Tab)
     MainButtons.grid(sticky='w',row=0)
     TestCommand = tkinter.Button(MainButtons, text = 'Test', width = 16,command = lambda: rcloneProcess(MainButtons, *currentcommandlist))
     TestCommand.grid(column=0, row=0)
@@ -169,11 +168,11 @@ def ButtonsGUI():
     PickCommands = tkinter.Button(MainButtons, text = "Pick Command", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Command:"))
     PickCommands.grid(column = 0, row = 1)
 
-    LineCanvas1 = tkinter.Canvas(ButtonsFrame, height = 1, width = 240)
+    LineCanvas1 = tkinter.Canvas(Tab, height = 1, width = 240)
     LineCanvas1.grid(sticky='we',row=1)
     LineCanvas1.create_line(0,0,250,0,fill='black', width=6)
 
-    CommandButtons = tkinter.Frame(ButtonsFrame)
+    CommandButtons = tkinter.Frame(Tab)
     CommandButtons.grid(row=2)
     SourceLable = tkinter.Label(CommandButtons, text = "Target", width = 16)
     SourceLable.grid(column = 1, row = 0)
@@ -192,17 +191,32 @@ def ButtonsGUI():
     PickLocalTarget = tkinter.Button(CommandButtons, text = "Local Drive", width = 16,command = lambda: LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Target:"))
     PickLocalTarget.grid(column = 1, row = 3)
 
-    CurrentCommand = tkinter.Frame(ButtonsFrame)
+    CurrentCommand = tkinter.Frame(Tab)
     CurrentCommand.grid(sticky='we',row=3)
     currentcommandlable = tkinter.Label(CurrentCommand, textvariable = currentcommand)
     currentcommandlable.grid(sticky='we')
 
-    LineCanvas2 = tkinter.Canvas(ButtonsFrame, height = 1, width = 240)
+    LineCanvas2 = tkinter.Canvas(Tab, height = 1, width = 240)
     LineCanvas2.grid(sticky='we',row=4)
     LineCanvas2.create_line(0,0,250,0,fill='black', width=6)
 
-    ConFigButtonsFrame = tkinter.Frame(GUI)
+    ConFigButtonsFrame = tkinter.Frame(Tab)
     ConFigButtonsFrame.grid(row=5)
+
+def ButtonsGUI():
+    MainCommandsLabel = tkinter.Label(GUI, text="Commands")
+    MainCommandsLabel.grid()
+    Tabs = Notebook(GUI)
+    Tabs.grid()
+
+    MountTab = tkinter.Frame(GUI)
+    ButtonsFrame = tkinter.Frame(Tabs)
+
+    Tabs.add(ButtonsFrame, text = "Main")
+    Tabs.add(MountTab, text = "Mount")
+
+    AddButtonToTab(MountTab)
+    AddButtonToTab(ButtonsFrame)
 
 def MainWindow():
     ButtonsGUI()
