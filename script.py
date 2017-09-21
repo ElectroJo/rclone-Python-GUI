@@ -12,6 +12,7 @@ from tkinter.ttk import *
 GUI = tkinter.Tk()
 processlist = []
 rcloneCommands = ['sync','ls','delete','mount','purge','lsd','size']
+rcloneParas = ['-v',"--config"]
 SourceType = ""
 DestType = ""
 AllLetters = ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'Y:', 'Z:']
@@ -80,8 +81,6 @@ class rcloneProcess:
 
 class TabInit:
     def __init__(self,tabs,text,command):
-        self.VCheckV = tkinter.StringVar()
-        self.VCheckV.set("")
         self.tabs = tabs
         self.textss = text
         self.commandss = command
@@ -92,6 +91,7 @@ class TabInit:
         self.MountTab = tkinter.Frame(self.tabs)
         self.tabs.add(self.MountTab, text = self.textss)
         self.AddButtonToTab(self.MountTab,self.commandss)
+
     def LoadConfigFromUser(self,ConFigButtonsFrame, Where="", Text = ""):
         self.Columnx = 0
         self.Rowy = 1
@@ -162,14 +162,15 @@ class TabInit:
         self.currentcommandlist[:] = [item for item in self.currentcommandlist if item != '']
         rcloneProcess(self.MainButtons, *self.currentcommandlist)
 
-    def CheckBoxSet(self,box):
-        if box == "-v":
-            if self.VCheckV.get() == "":
-                self.VCheckV.set("-v")
-                self.PickCMDCMD("-v",3)
-            else:
-                self.VCheckV.set("")
-                self.PickCMDCMD("",3)
+    def CheckBoxSet(self,box,position,varr):
+        if varr.get() == "":
+            varr.set(box)
+            self.PickCMDCMD(box,position)
+        else:
+            varr.set("")
+            self.PickCMDCMD("",position)
+
+
 
 
     def AddButtonToTab(self,Tab,command):
@@ -225,7 +226,11 @@ class TabInit:
 
         self.CheckBoxes = tkinter.Frame(Tab)
         self.CheckBoxes.grid(row=6)
-        self.VCheck = Checkbutton(self.CheckBoxes, text="-v", command=lambda: self.CheckBoxSet("-v"))
+
+#Will turn this toa for loop whenever I have the motivation
+        self.VcheckV = tkinter.StringVar()
+        self.VcheckV.set("")
+        self.VCheck = Checkbutton(self.CheckBoxes, text="-v", command= lambda: self.CheckBoxSet("-v",3,self.VcheckV))
         self.VCheck.grid()
 
 def RemoveGUI():
