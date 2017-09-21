@@ -11,7 +11,7 @@ from tkinter.ttk import *
 
 GUI = tkinter.Tk()
 processlist = []
-rcloneCommands = ['sync','ls','delete','mount','purge','lsd']
+rcloneCommands = ['sync','ls','delete','mount','purge','lsd','size']
 SourceType = ""
 DestType = ""
 AllLetters = ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'Y:', 'Z:']
@@ -80,6 +80,8 @@ class rcloneProcess:
 
 class TabInit:
     def __init__(self,tabs,text,command):
+        self.VCheckV = tkinter.StringVar()
+        self.VCheckV.set("")
         self.tabs = tabs
         self.textss = text
         self.commandss = command
@@ -133,9 +135,11 @@ class TabInit:
                 self.Rowy += 1
                 self.Columnx = 0
             self.ConfigButtons.append(self.ConfigSection)
+
     def LoadFile(self):
         self.ConfigFile = askopenfilename()
         return self.ConfigFile
+
     def PickCMDCMD(self,section,position,Type=""):
         while position+1 > len(self.currentcommandlist):
             if len(self.currentcommandlist) != position+1:
@@ -158,6 +162,16 @@ class TabInit:
         self.currentcommandlist[:] = [item for item in self.currentcommandlist if item != '']
         rcloneProcess(self.MainButtons, *self.currentcommandlist)
 
+    def CheckBoxSet(self,box):
+        if box == "-v":
+            if self.VCheckV.get() == "":
+                self.VCheckV.set("-v")
+                self.PickCMDCMD("-v",3)
+            else:
+                self.VCheckV.set("")
+                self.PickCMDCMD("",3)
+
+
     def AddButtonToTab(self,Tab,command):
         self.MainButtons = tkinter.Frame(Tab)
         self.MainButtons.grid(sticky='w',row=0)
@@ -172,9 +186,12 @@ class TabInit:
 
         self.CommandButtons = tkinter.Frame(Tab)
         self.CommandButtons.grid(row=2)
+
+
+
         self.SourceLable = tkinter.Label(self.CommandButtons, text = "Target", width = 16)
         self.SourceLable.grid(column = 1, row = 0)
-        if self.commandss in ('lsd'):
+        if self.commandss in ('lsd','size'):
             pass
         else:
             self.TargetLable = tkinter.Label(self.CommandButtons, text = "Source", width = 16)
@@ -201,8 +218,15 @@ class TabInit:
         self.LineCanvas2.grid(sticky='we',row=4)
         self.LineCanvas2.create_line(0,0,250,0,fill='black', width=6)
 
+
+
         ConFigButtonsFrame = tkinter.Frame(Tab)
         ConFigButtonsFrame.grid(row=5)
+
+        self.CheckBoxes = tkinter.Frame(Tab)
+        self.CheckBoxes.grid(row=6)
+        self.VCheck = Checkbutton(self.CheckBoxes, text="-v", command=lambda: self.CheckBoxSet("-v"))
+        self.VCheck.grid()
 
 def RemoveGUI():
     for process in processlist:
