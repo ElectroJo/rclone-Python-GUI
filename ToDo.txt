@@ -2,4 +2,5 @@ Make the GUI look better
 Add more commands/custom commands
 Make it so people can sync back from remote
 Add tooltips for everything
-Make variables better suit what they hold 
+Make variables better suit what they hold
+make it so users cant try to transfer from custom config remote to default config remote (it doesnt work)

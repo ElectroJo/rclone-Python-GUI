@@ -164,8 +164,12 @@ class TabInit:
             self.Config = configparser.ConfigParser()
             if Where == "":
                 self.Config.read("C:\\Users\\" + self.User +"\\.config\\rclone\\rclone.conf")
+                self.PickCMDCMD("",102)
+                self.PickCMDCMD("",101)
             else:
                 self.Config.read(Where)
+                self.PickCMDCMD('--config',101)
+                self.PickCMDCMD(Where.replace("/","\\"),102,"fromfile")
             self.ListVerYes = self.Config.sections()
         elif Text == "Command:":
             self.ListVerYes = parascmd

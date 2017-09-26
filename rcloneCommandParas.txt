@@ -1,9 +1,12 @@
 {
-	'sync':["--checksum","--dry-run","--exclude-from","-v","--dump-filters"],
+	'check':["--checksum"],
+	'cleanup':[],
 	'ls':["-q","-v"],
-	'delete':[],
+	'lsd':[],
+	'lsl':[],
 	'mount':["--no-checksum","--no-modtime","--read-only"],
 	'purge':[],
-	'lsd':[],
-	'size':["-v"]
+	'size':["-v"],
+	'sync':["--checksum","--dry-run","--exclude-from","-v","--dump-filters"],
+	'version':[]
 }
