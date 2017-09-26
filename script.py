@@ -167,8 +167,9 @@ class TabInit:
 
 
     def RcloneRemovedo(self):
-        self.currentcommandlist[:] = [item for item in self.currentcommandlist if item != '']
-        rcloneProcess(self.MainButtons, *self.currentcommandlist)
+        self.currentcommandlist2 = self.currentcommandlist[:]
+        self.currentcommandlist2[:] = [item for item in self.currentcommandlist2 if item != '']
+        rcloneProcess(self.MainButtons, *self.currentcommandlist2)
 
     def CheckBoxSet(self,box,position,varr):
         if varr.get() == "":
