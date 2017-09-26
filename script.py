@@ -173,7 +173,7 @@ class TabInit:
             if Text == "Drive Target:":
                 if self.textss == "mount":
                     self.ListVerYes = [x for x in AllLetters if x not in self.ComputerDrives]
-                elif self.textss in ("sync", "ls"):
+                elif self.textss in ("sync", "ls", "lsd"):
                     self.ListVerYes = [x for x in AllLetters if x in self.ComputerDrives]
                 else:
                     self.ListVerYes = AllLetters
@@ -226,6 +226,7 @@ class TabInit:
     def CheckBoxSet(self,box,position,varr):
         if varr.get() == "":
             varr.set(box)
+            print(box)
             self.PickCMDCMD(box,position)
         else:
             varr.set("")
@@ -291,7 +292,7 @@ class TabInit:
             index = parascmd[self.textss].index(self.Paras)
             self.VcheckV = tkinter.StringVar()
             self.VcheckV.set("")
-            self.VCheck = Checkbutton(self.CheckBoxes, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3: self.CheckBoxSet(Paras,Num,self.VcheckV))
+            self.VCheck = Checkbutton(self.CheckBoxes, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3, VcheckV = self.VcheckV: self.CheckBoxSet(Paras,Num,VcheckV))
             self.VCheck.grid()
             try:
                 self.tabdesc = CreateToolTip(self.VCheck, parasdesc[self.Paras])

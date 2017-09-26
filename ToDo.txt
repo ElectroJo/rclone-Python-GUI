@@ -1,4 +1,5 @@
 Make the GUI look better
 Add more commands/custom commands
 Make it so people can sync back from remote
-Add tooltips for everything, such as in https://stackoverflow.com/questions/3221956/what-is-the-simplest-way-to-make-tooltips-in-tkinter
+Add tooltips for everything
+Make variables better suit what they hold 
