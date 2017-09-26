@@ -1,5 +1,5 @@
 {
-	'sync':["--checksum","--dry-run"],
+	'sync':["--checksum","--dry-run","--exclude-from","-v","--dump-filters"],
 	'ls':["-q","-v"],
 	'delete':[],
 	'mount':["--no-checksum","--no-modtime","--read-only"],

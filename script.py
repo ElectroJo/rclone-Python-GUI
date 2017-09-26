@@ -204,8 +204,12 @@ class TabInit:
         while position+1 > len(self.currentcommandlist):
             if len(self.currentcommandlist) != position+1:
                 self.currentcommandlist.append("")
-        self.currentcommandlist[position] = section
+        if Type == "fromfile":
+            self.currentcommandlist.insert(position,section)
+        else:
+            self.currentcommandlist[position] = section
         self.currentcommand.set(" ".join(self.currentcommandlist))
+        self.currentcommand.set(" ".join(self.currentcommand.get().split()))
         if Type in ("Default Source:", "Custom Source:", "Drive Source:"):
             if Type == "Drive Source:":
                 SourceType = "Local"
@@ -226,11 +230,18 @@ class TabInit:
     def CheckBoxSet(self,box,position,varr):
         if varr.get() == "":
             varr.set(box)
-            print(box)
-            self.PickCMDCMD(box,position)
+            if box not in ("--exclude-from"):
+                self.PickCMDCMD(box,position)
+            else:
+                self.PickCMDCMD(box,99)
+                self.PickCMDCMD(askopenfilename().replace("/","\\"),100,"fromfile")
         else:
             varr.set("")
-            self.PickCMDCMD("",position)
+            if box not in ("--exclude-from"):
+                self.PickCMDCMD("",position)
+            else:
+                self.PickCMDCMD("",100)
+                self.PickCMDCMD("",99)
 
 
 

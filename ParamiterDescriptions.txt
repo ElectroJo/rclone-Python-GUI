@@ -5,5 +5,7 @@
 	'-v':"Print lots more stuff",
 	'--no-checksum':"Don't compare checksums on up/download",
 	'--no-modtime':"Don't read/write the modification time (can speed things up)",
-	'--read-only':"Mount read-only"
+	'--read-only':"Mount read-only",
+	'--exclude-from':"Read exclude patterns from file",
+	'--dump-filters':"Dump the filters to the output"
 }
