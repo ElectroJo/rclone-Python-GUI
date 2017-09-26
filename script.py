@@ -9,18 +9,12 @@ import win32api
 from tkinter import messagebox
 from tkinter.ttk import *
 
-syncparas = []
-lsparas = ["-q","-v"]
-deleteparas = []
-mountparas = []
-purgeparas = []
-lsdparas = []
-sizeparas = ["-v"]
-parascmd = {'sync':syncparas,'ls':lsparas,'delete':deleteparas,'mount':mountparas,'purge':purgeparas,'lsd':lsdparas,'size':sizeparas}
+
+parascmd = eval(open("rcloneCommandParas.txt").read())
+cmddesc = eval(open("CommandDescriptions.txt").read())
+parasdesc = eval(open("ParamiterDescriptions.txt").read())
 GUI = tkinter.Tk()
 processlist = []
-rcloneCommands = ['sync','ls','delete','mount','purge','lsd','size']
-rcloneParas = ['-v',"--config"]
 SourceType = ""
 DestType = ""
 AllLetters = ['A:', 'B:', 'C:', 'D:', 'E:', 'F:', 'G:', 'H:', 'I:', 'J:', 'K:', 'L:', 'M:', 'N:', 'O:', 'P:', 'Q:', 'R:', 'S:', 'T:', 'U:', 'V:', 'W:', 'X:', 'Y:', 'Z:']
@@ -87,6 +81,57 @@ class rcloneProcess:
             ende.destroy()
         kill_after(countdown=5)
 
+class CreateToolTip(object):
+    """
+    Code edited from crxguy52's response on https://stackoverflow.com/questions/3221956/what-is-the-simplest-way-to-make-tooltips-in-tkinter
+    """
+    def __init__(self, widget, text='widget info'):
+        self.waittime = 500     #miliseconds
+        self.wraplength = 180   #pixels
+        self.widget = widget
+        self.text = text
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.leave)
+        self.widget.bind("<ButtonPress>", self.leave)
+        self.id = None
+        self.tw = None
+
+    def enter(self, event=None):
+        self.schedule()
+
+    def leave(self, event=None):
+        self.unschedule()
+        self.hidetip()
+
+    def schedule(self):
+        self.unschedule()
+        self.id = self.widget.after(self.waittime, self.showtip)
+
+    def unschedule(self):
+        id = self.id
+        self.id = None
+        if id:
+            self.widget.after_cancel(id)
+
+    def showtip(self, event=None):
+        x = y = 0
+        x, y, cx, cy = self.widget.bbox("insert")
+        x += self.widget.winfo_rootx() + 25
+        y += self.widget.winfo_rooty() + 20
+        self.tw = tkinter.Toplevel(self.widget)
+        self.tw.wm_overrideredirect(True)
+        self.tw.wm_geometry("+%d+%d" % (x, y))
+        label = tkinter.Label(self.tw, text=self.text, justify='left',
+                       background="#ffffff", relief='solid', borderwidth=1,
+                       wraplength = self.wraplength)
+        label.pack(ipadx=1)
+
+    def hidetip(self):
+        tw = self.tw
+        self.tw= None
+        if tw:
+            tw.destroy()
+
 class TabInit:
     def __init__(self,tabs,text,command):
         self.tabs = tabs
@@ -99,6 +144,7 @@ class TabInit:
         self.MountTab = tkinter.Frame(self.tabs)
         self.tabs.add(self.MountTab, text = self.textss)
         self.AddButtonToTab(self.MountTab,self.commandss)
+
 
     def LoadConfigFromUser(self,ConFigButtonsFrame, Where="", Text = ""):
         self.Columnx = 0
@@ -120,7 +166,7 @@ class TabInit:
                 self.Config.read(Where)
             self.ListVerYes = self.Config.sections()
         elif Text == "Command:":
-            self.ListVerYes = rcloneCommands
+            self.ListVerYes = parascmd
         elif Text in ("Drive Source:", "Drive Target:"):
             if Text == "Drive Target:":
     #            ListVerYes = [x for x in AllLetters if x not in ComputerDrives]
@@ -235,13 +281,16 @@ class TabInit:
 
         self.CheckBoxes = tkinter.Frame(Tab)
         self.CheckBoxes.grid(row=6)
-#Will turn this toa for loop whenever I have the motivation
         for self.Paras in parascmd[self.textss]:
             index = parascmd[self.textss].index(self.Paras)
             self.VcheckV = tkinter.StringVar()
             self.VcheckV.set("")
             self.VCheck = Checkbutton(self.CheckBoxes, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3: self.CheckBoxSet(Paras,Num,self.VcheckV))
             self.VCheck.grid()
+            try:
+                self.tabdesc = CreateToolTip(self.VCheck, parasdesc[self.Paras])
+            except:
+                pass
 
 def RemoveGUI():
     for process in processlist:
@@ -253,7 +302,7 @@ def ButtonsGUI():
     MainCommandsLabel.grid()
     Tabs = Notebook(GUI)
     Tabs.grid()
-    for commands in rcloneCommands:
+    for commands in parascmd:
         TabInit(Tabs,text = commands,command = commands)
 
 

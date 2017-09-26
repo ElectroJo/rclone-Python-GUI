@@ -1,0 +1,3 @@
+{
+	'mount':"Mount the remote as a local drive. Requires WinFsp, http://www.secfs.net/winfsp/"
+}

@@ -1,0 +1,9 @@
+{
+	'sync':["--checksum","--dry-run"],
+	'ls':["-q","-v"],
+	'delete':[],
+	'mount':["--no-checksum","--no-modtime","--read-only"],
+	'purge':[],
+	'lsd':[],
+	'size':["-v"]
+}
