@@ -9,6 +9,14 @@ import win32api
 from tkinter import messagebox
 from tkinter.ttk import *
 
+syncparas = []
+lsparas = ["-q","-v"]
+deleteparas = []
+mountparas = []
+purgeparas = []
+lsdparas = []
+sizeparas = ["-v"]
+parascmd = {'sync':syncparas,'ls':lsparas,'delete':deleteparas,'mount':mountparas,'purge':purgeparas,'lsd':lsdparas,'size':sizeparas}
 GUI = tkinter.Tk()
 processlist = []
 rcloneCommands = ['sync','ls','delete','mount','purge','lsd','size']
@@ -226,12 +234,13 @@ class TabInit:
 
         self.CheckBoxes = tkinter.Frame(Tab)
         self.CheckBoxes.grid(row=6)
-
 #Will turn this toa for loop whenever I have the motivation
-        self.VcheckV = tkinter.StringVar()
-        self.VcheckV.set("")
-        self.VCheck = Checkbutton(self.CheckBoxes, text="-v", command= lambda: self.CheckBoxSet("-v",3,self.VcheckV))
-        self.VCheck.grid()
+        for self.Paras in parascmd[self.textss]:
+            index = parascmd[self.textss].index(self.Paras)
+            self.VcheckV = tkinter.StringVar()
+            self.VcheckV.set("")
+            self.VCheck = Checkbutton(self.CheckBoxes, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3: self.CheckBoxSet(Paras,Num,self.VcheckV))
+            self.VCheck.grid()
 
 def RemoveGUI():
     for process in processlist:
