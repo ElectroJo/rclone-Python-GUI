@@ -147,6 +147,8 @@ class TabInit:
 
 
     def LoadConfigFromUser(self,ConFigButtonsFrame, Where="", Text = ""):
+        self.ComputerDrives = win32api.GetLogicalDriveStrings()
+        self.ComputerDrives = self.ComputerDrives.split('\\\x00')[:-1]
         self.Columnx = 0
         self.Rowy = 1
         self.ConfigButtons
@@ -169,11 +171,15 @@ class TabInit:
             self.ListVerYes = parascmd
         elif Text in ("Drive Source:", "Drive Target:"):
             if Text == "Drive Target:":
-    #            ListVerYes = [x for x in AllLetters if x not in ComputerDrives]
-                self.ListVerYes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+                if self.textss == "mount":
+                    self.ListVerYes = [x for x in AllLetters if x not in self.ComputerDrives]
+                elif self.textss in ("sync", "ls"):
+                    self.ListVerYes = [x for x in AllLetters if x in self.ComputerDrives]
+                else:
+                    self.ListVerYes = AllLetters
+                self.ListVerYes = [x.strip(":") for x in self.ListVerYes]
+
             elif Text == "Drive Source:":
-                self.ComputerDrives = win32api.GetLogicalDriveStrings()
-                self.ComputerDrives = self.ComputerDrives.split('\\\x00')[:-1]
                 self.ComputerDrives = [x.strip(":") for x in self.ComputerDrives]
                 self.ListVerYes = self.ComputerDrives
         for sections in self.ListVerYes:
@@ -247,20 +253,20 @@ class TabInit:
 
         self.SourceLable = tkinter.Label(self.CommandButtons, text = "Target", width = 16)
         self.SourceLable.grid(column = 1, row = 0)
-        if self.commandss in ('lsd','size'):
+        if self.commandss in ('lsd','size','ls'):
             pass
         else:
             self.TargetLable = tkinter.Label(self.CommandButtons, text = "Source", width = 16)
             self.TargetLable.grid(column = 0, row = 0)
             self.LoadConfig = tkinter.Button(self.CommandButtons, text = "From Default Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Default Source:"))
             self.LoadConfig.grid(column = 0, row = 1)
-            self.LoadCustomConfig = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(), "Custom Source:"))
+            self.LoadCustomConfig = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, self.LoadFile(), "Custom Source:"))
             self.LoadCustomConfig.grid(column = 0, row = 2)
             self.PickLocalSource = tkinter.Button(self.CommandButtons, text = "Local Drive", width = 16,command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Source:"))
             self.PickLocalSource.grid(column = 0, row = 3)
         self.LoadConfigDest = tkinter.Button(self.CommandButtons, text = "From Default Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Default Target:"))
         self.LoadConfigDest.grid(column = 1, row = 1)
-        self.LoadCustomConfigDest = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: LoadConfigFromUser(ConFigButtonsFrame, LoadFile(),"Custom Target:"))
+        self.LoadCustomConfigDest = tkinter.Button(self.CommandButtons, text = "From Custom Config", width = 16, command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, self.LoadFile(),"Custom Target:"))
         self.LoadCustomConfigDest.grid(column = 1, row = 2)
         self.PickLocalTarget = tkinter.Button(self.CommandButtons, text = "Local Drive", width = 16,command = lambda: self.LoadConfigFromUser(ConFigButtonsFrame, "", "Drive Target:"))
         self.PickLocalTarget.grid(column = 1, row = 3)

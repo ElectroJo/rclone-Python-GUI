@@ -1,3 +1,9 @@
 {
-	'--dry-run':"Do a trial run with no permanent changes"
+	'--dry-run':"Do a trial run with no permanent changes",
+	'--checksum':"Skip based on checksum & size, not mod-time & size",
+	'-q':"Print as little stuff as possible",
+	'-v':"Print lots more stuff",
+	'--no-checksum':"Don't compare checksums on up/download",
+	'--no-modtime':"Don't read/write the modification time (can speed things up)",
+	'--read-only':"Mount read-only"
 }
