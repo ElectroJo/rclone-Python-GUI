@@ -1,11 +1,25 @@
 {
 	'--dry-run':"Do a trial run with no permanent changes",
 	'--checksum':"Skip based on checksum & size, not mod-time & size",
-	'-q':"Print as little stuff as possible",
-	'-v':"Print lots more stuff",
+	'--contimeout':"Connect timeout (in seconds), e.g 60 = 1m, 120 = 2m.  (default 60s)",
+	'--quiet':"Print as little stuff as possible",
+	'--verbose':"Print lots more stuff",
 	'--no-checksum':"Don't compare checksums on up/download",
 	'--no-modtime':"Don't read/write the modification time (can speed things up)",
 	'--read-only':"Mount read-only",
 	'--exclude-from':"Read exclude patterns from file",
-	'--dump-filters':"Dump the filters to the output"
+	'--dump-filters':"Dump the filters to the output",
+	'--drive-trashed-only':"Only show files that are in the trash",
+	'--fast-list':"Use recursive list if available. Uses more memory but fewer transactions",
+	'--retries':"Retry operations this many times if they fail (default 3)",
+	'--checkers':"Number of checkers to run in parallel. (default 8)",
+	'--ignore-times':"Don't skip files that match size and time - transfer all files",
+	'--ignore-existing':"Skip all files that exist on destination",
+	'--no-update-modtime':"Don't update destination mod-time if files identical",
+	'--timeout':"IO idle timeout (in seconds), e.g 60 = 1m, 120 = 2m.  (default 300s)",
+	'--ignore-size':"Ignore size when skipping use mod-time or checksum",
+	'--ignore-checksum':"Skip post copy check of checksums",
+	'--size-only':"Skip post copy check of checksums",
+	'--stats':"Interval between printing stats (in seconds), e.g 60 = 1m, 120 = 2m.  (default 60s)",
+	'--tpslimit':"Limit HTTP transactions per second to this"
 }

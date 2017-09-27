@@ -134,6 +134,8 @@ class CreateToolTip(object):
 
 class TabInit:
     def __init__(self,tabs,text,command):
+        self.ParaPos1 = 103
+        self.ParaPos2 = 104
         self.tabs = tabs
         self.textss = text
         self.commandss = command
@@ -164,12 +166,12 @@ class TabInit:
             self.Config = configparser.ConfigParser()
             if Where == "":
                 self.Config.read("C:\\Users\\" + self.User +"\\.config\\rclone\\rclone.conf")
-                self.PickCMDCMD("",102)
-                self.PickCMDCMD("",101)
+                self.PickCMDCMD("",100)
+                self.PickCMDCMD("",99)
             else:
                 self.Config.read(Where)
-                self.PickCMDCMD('--config',101)
-                self.PickCMDCMD(Where.replace("/","\\"),102,"fromfile")
+                self.PickCMDCMD('--config',99)
+                self.PickCMDCMD(Where.replace("/","\\"),100,"fromfile")
             self.ListVerYes = self.Config.sections()
         elif Text == "Command:":
             self.ListVerYes = parascmd
@@ -231,36 +233,47 @@ class TabInit:
         self.currentcommandlist2[:] = [item for item in self.currentcommandlist2 if item != '']
         rcloneProcess(self.MainButtons, *self.currentcommandlist2)
 
-    def CheckBoxSet(self,box,position,varr):
+    def CheckBoxSet(self,box,position,varr, Numm = 0):
         if varr.get() == "":
             varr.set(box)
-            if box not in ("--exclude-from"):
+            if box not in ("--exclude-from",'--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
                 self.PickCMDCMD(box,position)
             else:
-                self.PickCMDCMD(box,99)
-                self.PickCMDCMD(askopenfilename().replace("/","\\"),100,"fromfile")
+                if box not in ("--exclude-from"):
+                    self.PickCMDCMD(box,position)
+                    if box not in ('--stats','--timeout','--contimeout'):
+                        self.PickCMDCMD(Numm,position+1)
+                    else:
+                        self.PickCMDCMD(Numm+"s",position+1)
+                else:
+                    self.PickCMDCMD(box,101)
+                    self.PickCMDCMD(askopenfilename().replace("/","\\"),102,"fromfile")
         else:
             varr.set("")
-            if box not in ("--exclude-from"):
+            if box not in ("--exclude-from",'--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
                 self.PickCMDCMD("",position)
             else:
-                self.PickCMDCMD("",100)
-                self.PickCMDCMD("",99)
+                if box not in ("--exclude-from"):
+                    self.PickCMDCMD("",position)
+                    self.PickCMDCMD("",position+1)
+                else:
+                    self.PickCMDCMD("",102)
+                    self.PickCMDCMD("",101)
 
 
 
 
     def AddButtonToTab(self,Tab,command):
         self.MainButtons = tkinter.Frame(Tab)
-        self.MainButtons.grid(sticky='w',row=0)
+        self.MainButtons.grid(row=0)
         self.TestCommand = tkinter.Button(self.MainButtons, text = 'Test', width = 16,command = lambda: self.RcloneRemovedo())
         self.TestCommand.grid(column=0, row=0)
         self.CloseButton = tkinter.Button(self.MainButtons, text = "Close", width = 16, command = lambda: RemoveGUI())
         self.CloseButton.grid(column=1, row=0)
         self.PickCMDCMD(command,0)
-        self.LineCanvas1 = tkinter.Canvas(Tab, height = 1, width = 240)
-        self.LineCanvas1.grid(sticky='we',row=1)
-        self.LineCanvas1.create_line(0,0,250,0,fill='black', width=6)
+        self.LineCanvas1 = tkinter.Canvas(Tab, height = 1)
+        self.LineCanvas1.grid(row=1)
+        self.LineCanvas1.create_line(0,0,750,0,fill='black', width=6)
 
         self.CommandButtons = tkinter.Frame(Tab)
         self.CommandButtons.grid(row=2)
@@ -288,13 +301,13 @@ class TabInit:
         self.PickLocalTarget.grid(column = 1, row = 3)
 
         self.CurrentCommand = tkinter.Frame(Tab)
-        self.CurrentCommand.grid(sticky='we',row=3)
+        self.CurrentCommand.grid(row=3)
         self.currentcommandlable = tkinter.Label(self.CurrentCommand, textvariable = self.currentcommand)
-        self.currentcommandlable.grid(sticky='we')
+        self.currentcommandlable.grid()
 
-        self.LineCanvas2 = tkinter.Canvas(Tab, height = 1, width = 240)
-        self.LineCanvas2.grid(sticky='we',row=4)
-        self.LineCanvas2.create_line(0,0,250,0,fill='black', width=6)
+        self.LineCanvas2 = tkinter.Canvas(Tab, height = 1)
+        self.LineCanvas2.grid(row=4)
+        self.LineCanvas2.create_line(0,0,750,0,fill='black', width=6)
 
 
 
@@ -303,17 +316,40 @@ class TabInit:
 
         self.CheckBoxes = tkinter.Frame(Tab)
         self.CheckBoxes.grid(row=6)
+        self.x = 0
+        self.y = 0
+        self.lists = []
+        self.listsvalue = 0
+
         for self.Paras in parascmd[self.textss]:
             index = parascmd[self.textss].index(self.Paras)
             self.VcheckV = tkinter.StringVar()
             self.VcheckV.set("")
-            self.VCheck = Checkbutton(self.CheckBoxes, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3, VcheckV = self.VcheckV: self.CheckBoxSet(Paras,Num,VcheckV))
-            self.VCheck.grid()
+            self.VcheckFrame = tkinter.Frame(self.CheckBoxes,width=200,height=30)
+            self.VcheckFrame.grid(column = self.x, row = self.y)
+#            self.VcheckFrame.grid_propagate(False)
+            if self.Paras in ('--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
+                self.lists.append(self.Paras)
+                self.lists[self.listsvalue] = tkinter.IntVar()
+                self.lists[self.listsvalue].set(0)
+                self.VcheckNum = Entry(self.VcheckFrame, width=5, textvariable=self.lists[self.listsvalue])
+                self.VcheckNum.grid(column = 1, row=1)
+                self.VCheck = Checkbutton(self.VcheckFrame, text=self.Paras,width = 15, command= lambda Paras = self.Paras, Num = self.ParaPos1,listsvalue = self.listsvalue, VcheckV = self.VcheckV: self.CheckBoxSet(Paras,Num,VcheckV,str(self.lists[listsvalue].get())))
+                self.ParaPos1 += 2
+                self.listsvalue += 1
+            else:
+                self.VCheck = Checkbutton(self.VcheckFrame,width = 21, text=self.Paras, command= lambda Paras = self.Paras, Num = index+3, VcheckV = self.VcheckV: self.CheckBoxSet(Paras,Num,VcheckV))
+            self.VCheck.grid(column = 0, row=1)
+
+            if self.x < 2:
+                self.x += 1
+            else:
+                self.x = 0
+                self.y += 1
             try:
                 self.tabdesc = CreateToolTip(self.VCheck, parasdesc[self.Paras])
             except:
                 pass
-
 def RemoveGUI():
     for process in processlist:
         process.terminate()
