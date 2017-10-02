@@ -17,9 +17,13 @@
 	'--ignore-existing':"Skip all files that exist on destination",
 	'--no-update-modtime':"Don't update destination mod-time if files identical",
 	'--timeout':"IO idle timeout (in seconds), e.g 60 = 1m, 120 = 2m.  (default 300s)",
-	'--ignore-size':"Ignore size when skipping use mod-time or checksum",
+	'--ignore-size':"Ignore size when skipping. Use mod-time or checksum",
 	'--ignore-checksum':"Skip post copy check of checksums",
 	'--size-only':"Skip post copy check of checksums",
 	'--stats':"Interval between printing stats (in seconds), e.g 60 = 1m, 120 = 2m.  (default 60s)",
-	'--tpslimit':"Limit HTTP transactions per second to this"
+	'--tpslimit':"Limit HTTP transactions per second to this",
+	'--log-file':"Log everything to this file instead of the console",
+	'--syslog':"Use Syslog for logging instead of the console",
+	'--bwlimit':"Bandwidth limit in kBytes/s",
+	'--crypt-show-mapping ':"For all files listed show how the names encrypt"
 }

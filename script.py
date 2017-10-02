@@ -4,7 +4,7 @@ import tkinter
 from threading import Thread
 import configparser
 import getpass
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 import win32api
 from tkinter import messagebox
 from tkinter.ttk import *
@@ -13,6 +13,8 @@ from tkinter.ttk import *
 parascmd = eval(open("rcloneCommandParas.txt").read())
 cmddesc = eval(open("CommandDescriptions.txt").read())
 parasdesc = eval(open("ParamiterDescriptions.txt").read())
+parasuserinput = "--exclude-from",'--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit',"--log-file","--bwlimit"
+parastime = '--stats','--timeout','--contimeout'
 GUI = tkinter.Tk()
 processlist = []
 SourceType = ""
@@ -236,29 +238,29 @@ class TabInit:
     def CheckBoxSet(self,box,position,varr, Numm = 0):
         if varr.get() == "":
             varr.set(box)
-            if box not in ("--exclude-from",'--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
+            if box not in parasuserinput:
                 self.PickCMDCMD(box,position)
             else:
-                if box not in ("--exclude-from"):
+                if box not in ("--exclude-from","--log-file"):
                     self.PickCMDCMD(box,position)
-                    if box not in ('--stats','--timeout','--contimeout'):
+                    if box not in parastime:
                         self.PickCMDCMD(Numm,position+1)
                     else:
                         self.PickCMDCMD(Numm+"s",position+1)
                 else:
-                    self.PickCMDCMD(box,101)
-                    self.PickCMDCMD(askopenfilename().replace("/","\\"),102,"fromfile")
+                    self.PickCMDCMD(box,position)
+                    if box in ("--log-file"):
+                        self.PickCMDCMD(asksaveasfilename().replace("/","\\"),position+1,"fromfile")
+                    else:
+                        self.PickCMDCMD(askopenfilename().replace("/","\\"),position+1,"fromfile")
         else:
             varr.set("")
-            if box not in ("--exclude-from",'--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
+            if box not in parasuserinput:
                 self.PickCMDCMD("",position)
             else:
-                if box not in ("--exclude-from"):
-                    self.PickCMDCMD("",position)
-                    self.PickCMDCMD("",position+1)
-                else:
-                    self.PickCMDCMD("",102)
-                    self.PickCMDCMD("",101)
+                self.PickCMDCMD("",position)
+                self.PickCMDCMD("",position+1)
+
 
 
 
@@ -328,12 +330,16 @@ class TabInit:
             self.VcheckFrame = tkinter.Frame(self.CheckBoxes,width=200,height=30)
             self.VcheckFrame.grid(column = self.x, row = self.y)
 #            self.VcheckFrame.grid_propagate(False)
-            if self.Paras in ('--contimeout','--retries','--checkers','--stats','--timeout','--tpslimit'):
+            if self.Paras in parasuserinput:
                 self.lists.append(self.Paras)
                 self.lists[self.listsvalue] = tkinter.IntVar()
                 self.lists[self.listsvalue].set(0)
-                self.VcheckNum = Entry(self.VcheckFrame, width=5, textvariable=self.lists[self.listsvalue])
-                self.VcheckNum.grid(column = 1, row=1)
+                if self.Paras not in ("--exclude-from","--log-file"):
+                    self.VcheckNum = Entry(self.VcheckFrame, width=5, textvariable=self.lists[self.listsvalue])
+                    self.VcheckNum.grid(column = 1, row=1)
+                else:
+                    self.VcheckNum = Label(self.VcheckFrame, width=5, text="")
+                    self.VcheckNum.grid(column = 1, row=1)
                 self.VCheck = Checkbutton(self.VcheckFrame, text=self.Paras,width = 15, command= lambda Paras = self.Paras, Num = self.ParaPos1,listsvalue = self.listsvalue, VcheckV = self.VcheckV: self.CheckBoxSet(Paras,Num,VcheckV,str(self.lists[listsvalue].get())))
                 self.ParaPos1 += 2
                 self.listsvalue += 1
