@@ -35,7 +35,7 @@ class rcloneProcess:
             messagebox.showerror("Error","You are trying to sync to a drive that doesn't exists. \nPlease pick a diffrent letter.")
         else:
             self.CommandLists = []
-            self.CommandLists.append(r"rclone\rclone-v1.37-windows-amd64\rclone.exe")
+            self.CommandLists.append(r"rclone\rclone.exe")
             for args in Commands:
                 self.CommandLists.append(args)
             self.GUI = GUI
