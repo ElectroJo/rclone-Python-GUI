@@ -1,0 +1,3 @@
+[submodule "CLI-GUI-Interface"]
+	path = CLI-GUI-Interface
+	url = https://github.com/ElectroJo/CLI-GUI-Interface.git
